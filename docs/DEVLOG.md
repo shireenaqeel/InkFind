@@ -5,6 +5,43 @@ Newest entries at the top. Keep this updated as each slice progresses.
 
 ---
 
+## 2026-06-23 — Slice 2: AI Design Generator (scaffold)
+
+**Goal:** Prove MVP feature #2 end-to-end (UI → API → data) with mock generation, no real diffusion yet.
+
+**What was built**
+- Types: `GenerateRequest`, `GeneratedDesign` (`lib/types.ts`).
+- Mock generator (`lib/generate.ts`): produces N deterministic placeholder
+  variations seeded by (prompt, style, seed, index). FNV-1a hash → stable image URLs.
+- API: `POST /api/generate` (`app/api/generate/route.ts`) with prompt/style validation.
+- `/generate` page: prompt input, style-preset chips, 4 variations per run,
+  one-tap **Regenerate** (reseeds), per-card **♥ save** and **Download**.
+- Favorites: `useFavorites` hook (`lib/favorites.ts`) — localStorage-backed personal
+  collection, synced across hook instances via a custom event. `/favorites` page.
+- Shared `SiteHeader` with nav (Search / Generate / Favorites); home page refactored
+  to use it.
+
+**Decisions**
+- **Mock generator as placeholder for image-gen API** — `GeneratedDesign` contract is
+  stable so UI won't change when a real diffusion/image API lands.
+- **Deterministic seeding** so "Regenerate" yields a fresh-but-reproducible set, and
+  saved favorites have stable ids that dedupe correctly.
+- **localStorage favorites (no auth yet)** — swap storage layer for an API-backed
+  collection once accounts exist; hook surface stays the same.
+- **Download via fetch→blob** with open-in-tab fallback for cross-origin placeholders.
+
+**Verified**
+- `npm run build` ✓ — routes: `/`, `/generate`, `/favorites`, `/api/generate`, `/api/search`.
+- `POST /api/generate` seed=1 reproducible across runs; seed=2 differs (regenerate works).
+- Validation: missing prompt → 400; bad style → descriptive error.
+- All three pages return HTTP 200.
+
+**Next up**
+- Real image-gen API behind `/api/generate`.
+- Then Slice 3: Placement Preview ("Try It On").
+
+---
+
 ## 2026-06-23 — Slice 1: Smart Search & Discovery (scaffold)
 
 **Goal:** Prove MVP feature #1 end-to-end (UI → API → data) with mock data, no AI yet.

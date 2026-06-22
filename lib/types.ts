@@ -54,3 +54,21 @@ export interface SearchResult extends Tattoo {
   // 0..1 relevance from the (currently keyword-based) matcher.
   score: number;
 }
+
+// --- AI Design Generator ---
+
+export interface GenerateRequest {
+  prompt: string;
+  style: Style;
+  count?: number; // variations to produce (default 4)
+  seed?: number; // changes on "regenerate" to get fresh variations
+}
+
+export interface GeneratedDesign {
+  id: string; // stable per (prompt, style, seed, index) so favorites dedupe
+  prompt: string;
+  style: Style;
+  imageUrl: string;
+  createdAt: number;
+}
+

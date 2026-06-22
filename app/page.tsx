@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import SiteHeader from "@/components/SiteHeader";
 import SearchControls from "@/components/SearchControls";
 import ResultsGrid from "@/components/ResultsGrid";
 import type { SearchFilters, SearchResult } from "@/lib/types";
@@ -51,12 +52,7 @@ export default function Home() {
 
   return (
     <main className="container">
-      <header className="app-header">
-        <h1>
-          Ink<span className="ink">Find</span>
-        </h1>
-        <p>Find your next tattoo. Generate it. See it on you — before you commit.</p>
-      </header>
+      <SiteHeader />
 
       <SearchControls
         prompt={prompt}

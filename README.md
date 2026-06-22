@@ -17,7 +17,7 @@ Building the MVP one vertical slice at a time (UI → API → data with mock dat
 | # | MVP feature | Status |
 |---|-------------|--------|
 | 1 | Smart Search & Discovery | 🟢 scaffolded (mock data, keyword matcher) |
-| 2 | AI Design Generator | ⚪ not started |
+| 2 | AI Design Generator | 🟢 scaffolded (mock gen, variations, favorites) |
 | 3 | Placement Preview ("Try It On") | ⚪ not started |
 | 4 | Tattoo Guide | ⚪ not started |
 
@@ -50,16 +50,33 @@ npm start        # serve the production build
 app/
   layout.tsx              # root layout + metadata
   page.tsx                # Smart Search page (client)
+  generate/page.tsx      # AI Design Generator page
+  favorites/page.tsx     # saved collection (localStorage)
   globals.css            # mobile-first styles
   api/search/route.ts    # GET /api/search — prompt + filters
+  api/generate/route.ts  # POST /api/generate — prompt + style + variations
 components/
+  SiteHeader.tsx         # brand + nav (Search / Generate / Favorites)
   SearchControls.tsx     # search bar, image-upload stub, filters
-  ResultsGrid.tsx        # results grid + cards
+  ResultsGrid.tsx        # search results grid + cards
+  DesignCard.tsx         # generated design card (save + download)
 lib/
   types.ts               # domain types + style/body-part/size enums
   search.ts              # keyword matcher (placeholder for vector search)
+  generate.ts            # mock design generator (placeholder for image-gen API)
+  favorites.ts           # useFavorites hook (localStorage-backed)
   data/tattoos.ts        # mock tattoo catalog
 ```
+
+## AI Design Generator — how it works (MVP)
+
+- **Style presets** (fine-line, traditional, blackwork, watercolor, geometric, …) as chips.
+- **Variations:** 4 per generate; **Regenerate** reseeds for a fresh set.
+- **Mock engine:** deterministic placeholder images seeded by (prompt, style, seed,
+  index). Swap `lib/generate.ts` for a real image-gen API — `GeneratedDesign`
+  contract stays stable.
+- **Favorites:** tap ♥ to save to a personal collection (localStorage today;
+  API-backed once accounts land). Download saves the image locally.
 
 ## Smart Search — how it works (MVP)
 
