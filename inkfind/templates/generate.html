@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% set active = 'generate' %}
+{% import "_macros.html" as m %}
+
+{% block title %}AI Design Generator{% endblock %}
+
+{% block content %}
+<section class="generator">
+  <h2 class="section-title">AI Design Generator</h2>
+  <p class="section-sub">Describe an idea, pick a style, and generate original variations.</p>
+
+  <form id="gen-form" hx-post="/generate" hx-target="#gen-results" hx-swap="innerHTML">
+    <div class="searchbar">
+      <input type="text" name="prompt"
+             placeholder='e.g. "a phoenix rising with peony flowers"'
+             aria-label="Describe the tattoo to generate" />
+      <button type="submit" class="btn btn-primary">Generate</button>
+    </div>
+
+    {#- Selected style lives in a hidden input; chips update it (tiny bit of JS —
+        chip selection is the one interaction that's cleaner client-side). -#}
+    <input type="hidden" name="style" id="style-input" value="{{ style }}" />
+    <div class="presets" id="presets">
+      {% for s in STYLES %}
+        <button type="button" class="chip {% if s == style %}active{% endif %}"
+                data-style="{{ s }}">{{ m.cap(s) }}</button>
+      {% endfor %}
+    </div>
+  </form>
+</section>
+
+<div id="gen-results">
+  <div class="empty">Your generated designs will appear here. Tap a ♥ to save favorites.</div>
+</div>
+
+<script>
+  // Chip selection: set the hidden style input and move the active highlight.
+  document.getElementById("presets").addEventListener("click", (e) => {
+    const chip = e.target.closest(".chip");
+    if (!chip) return;
+    document.getElementById("style-input").value = chip.dataset.style;
+    document.querySelectorAll("#presets .chip").forEach((c) => c.classList.remove("active"));
+    chip.classList.add("active");
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>InkFind — {% block title %}Find your next tattoo{% endblock %}</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+  <script src="https://unpkg.com/htmx.org@1.9.12" defer></script>
+</head>
+<body>
+  <main class="container">
+    <header class="app-header">
+      <div class="header-top">
+        <a class="brand" href="/"><span class="ink">Ink</span>Find</a>
+        <nav class="nav">
+          <a class="nav-link {% if active == 'search' %}active{% endif %}" href="/">Search</a>
+          <a class="nav-link {% if active == 'generate' %}active{% endif %}" href="/generate">Generate</a>
+          <a class="nav-link {% if active == 'favorites' %}active{% endif %}" href="/favorites">Favorites</a>
+        </nav>
+      </div>
+      {% block tagline %}{% endblock %}
+    </header>
+
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

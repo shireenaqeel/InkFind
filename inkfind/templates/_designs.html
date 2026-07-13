@@ -1,0 +1,23 @@
+{#- Generated-designs fragment (HTMX target on the Generate page). -#}
+{% import "_macros.html" as m %}
+
+{% if error %}
+  <p class="error">{{ error }}</p>
+{% endif %}
+
+{% if designs %}
+  <div class="result-meta-row">
+    <p class="result-meta">{{ designs|length }} variations · {{ m.cap(style) }}</p>
+    <button type="button" class="btn btn-ghost"
+            hx-post="/generate" hx-include="#gen-form" hx-target="#gen-results" hx-swap="innerHTML">
+      ↻ Regenerate
+    </button>
+  </div>
+  <div class="grid">
+    {% for d in designs %}{{ m.design_card(d, is_favorite(d), 'generate') }}{% endfor %}
+  </div>
+{% elif not error %}
+  <div class="empty">
+    Your generated designs will appear here. Tap a ♥ to save favorites.
+  </div>
+{% endif %}

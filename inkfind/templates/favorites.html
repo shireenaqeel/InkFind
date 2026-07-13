@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% set active = 'favorites' %}
+{% import "_macros.html" as m %}
+
+{% block title %}Your Collection{% endblock %}
+
+{% block content %}
+<section class="generator">
+  <h2 class="section-title">Your Collection</h2>
+  <p class="section-sub">Designs you've saved, stored for this browser session.</p>
+</section>
+
+{% if favorites %}
+  <p class="result-meta">
+    {{ favorites|length }} saved {{ 'design' if favorites|length == 1 else 'designs' }}
+  </p>
+  <div class="grid">
+    {% for d in favorites %}{{ m.design_card(d, True, 'favorites') }}{% endfor %}
+  </div>
+{% else %}
+  <div class="empty">
+    No saved designs yet. Head to <a class="nav-link active" href="/generate">Generate</a>
+    and tap ♥ on the ones you like.
+  </div>
+{% endif %}
+{% endblock %}

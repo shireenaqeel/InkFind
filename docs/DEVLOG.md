@@ -5,6 +5,49 @@ Newest entries at the top. Keep this updated as each slice progresses.
 
 ---
 
+## 2026-07-13 — Port to Python (FastAPI + Jinja2 + HTMX)
+
+**Goal:** Re-platform the app to be Python-first per request ("can we do this
+entirely in Python?"). Ported Slices 1 & 2 with identical behavior and data.
+
+**What was built** (`inkfind/` package)
+- Domain model ported to dataclasses/constants (`models.py`) — `STYLES`,
+  `BODY_PARTS`, `SIZES`, `Tattoo`, `SearchResult`, `GeneratedDesign`.
+- Same 16-tattoo mock catalog (`data.py`), keyword search matcher (`search.py`),
+  and mock generator (`generate.py`) — the FNV-1a hash was ported exactly, so
+  placeholder picsum image URLs are **byte-for-byte identical** to the TS version.
+- FastAPI app (`main.py`): server-rendered pages + HTMX fragments for Search,
+  Generate, and Favorites. Original JSON contracts preserved under `/api/search`
+  and `/api/generate` for a future real frontend.
+- Templates (Jinja2) + ported dark-theme CSS (`static/styles.css`, copied from
+  the Next.js `globals.css`).
+- Favorites moved from browser localStorage to a server-side per-session store
+  (`favorites.py`), keyed by an `inkfind_sid` cookie. In-memory for now.
+
+**Decisions**
+- **FastAPI + HTMX over Streamlit/Gradio** — keeps a real mobile-first web UX and
+  server-rendered Python for ~90% of the UI; only chip selection uses a few lines
+  of vanilla JS. The placement-preview canvas (Slice 3) will need browser JS
+  regardless of stack, so this minimizes JS rather than pretending it away.
+- **Server-side favorites** — fits HTMX naturally without client state; swap the
+  in-memory store for a DB once accounts land (same list/toggle/is_favorite API).
+- **Next.js scaffold left in place** (`app/`, `components/`, `lib/`) but superseded
+  by the Python app; can be removed once the Python version is confirmed as the path.
+
+**Verified**
+- `uvicorn inkfind.main:app` boots; `/`, `/search`, `/generate`, `/favorites`,
+  `/static/styles.css` all return HTTP 200.
+- TestClient end-to-end: home renders 16 catalog cards; `search?prompt=wolf` → 2
+  (matches TS); `style=blackwork` → 2; generate → 4 variations; empty prompt →
+  error; save→collection→unsave favorites loop works; `/api/*` JSON parity holds
+  and generated `imageUrl` matches the hashed picsum seed.
+
+**Next up**
+- Decide whether to delete the Next.js scaffold.
+- Real image-gen API behind `/generate`; then Slice 3: Placement Preview.
+
+---
+
 ## 2026-06-23 — Slice 2: AI Design Generator (scaffold)
 
 **Goal:** Prove MVP feature #2 end-to-end (UI → API → data) with mock generation, no real diffusion yet.

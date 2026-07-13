@@ -1,0 +1,51 @@
+{#- Shared macros. Kept in one file so both full pages and HTMX fragments render
+    identical markup. -#}
+
+{% macro cap(s) -%}{{ (s[0]|upper) ~ (s[1:]|replace('-', ' ')) }}{%- endmacro %}
+
+{#- Save/unsave heart as a self-replacing HTMX form (no page JS needed).
+    `context` = 'generate' flips the heart in place; 'favorites' removes the card. -#}
+{% macro heart_form(design, saved, context) %}
+<form class="heart-form" hx-post="/favorites/toggle" hx-swap="outerHTML"
+      hx-target="{{ 'closest .card' if context == 'favorites' else 'this' }}">
+  <input type="hidden" name="id" value="{{ design.id }}" />
+  <input type="hidden" name="prompt" value="{{ design.prompt }}" />
+  <input type="hidden" name="style" value="{{ design.style }}" />
+  <input type="hidden" name="image_url" value="{{ design.image_url }}" />
+  <input type="hidden" name="created_at" value="{{ design.created_at }}" />
+  <input type="hidden" name="context" value="{{ context }}" />
+  <button type="submit" class="heart {% if saved %}saved{% endif %}"
+          aria-label="{{ 'Remove from favorites' if saved else 'Save to favorites' }}">
+    {{ '♥' if saved else '♡' }}
+  </button>
+</form>
+{% endmacro %}
+
+{#- A generated / saved design card. -#}
+{% macro design_card(design, saved, context) %}
+<div class="card">
+  <div class="thumb">
+    <img src="{{ design.image_url }}" alt="{{ design.prompt }}" loading="lazy" />
+    {{ heart_form(design, saved, context) }}
+  </div>
+  <div class="card-body">
+    <h3>{{ design.prompt }}</h3>
+    <div class="tags"><span class="tag">{{ design.style|replace('-', ' ') }}</span></div>
+  </div>
+</div>
+{% endmacro %}
+
+{#- A catalog search-result card. -#}
+{% macro tattoo_card(t) %}
+<div class="card">
+  <div class="thumb">
+    <img src="{{ t.image_url }}" alt="{{ t.title }}" loading="lazy" />
+  </div>
+  <div class="card-body">
+    <h3>{{ t.title }}</h3>
+    <div class="tags">
+      {% for tag in t.tags[:3] %}<span class="tag">{{ tag }}</span>{% endfor %}
+    </div>
+  </div>
+</div>
+{% endmacro %}

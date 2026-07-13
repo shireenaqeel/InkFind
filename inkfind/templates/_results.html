@@ -1,0 +1,14 @@
+{#- Search-results fragment (HTMX target). -#}
+{% import "_macros.html" as m %}
+
+<p class="result-meta">
+  {{ results|length }} {{ 'design' if results|length == 1 else 'designs' }}{% if prompt %} for "{{ prompt }}"{% endif %}
+</p>
+
+{% if results %}
+  <div class="grid">
+    {% for r in results %}{{ m.tattoo_card(r.tattoo) }}{% endfor %}
+  </div>
+{% else %}
+  <div class="empty">No designs match yet. Try a different prompt or clear the filters.</div>
+{% endif %}

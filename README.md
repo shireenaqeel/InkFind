@@ -25,47 +25,44 @@ Detailed progress + decisions: [`docs/DEVLOG.md`](./docs/DEVLOG.md).
 
 ## Tech stack
 
-- **Framework:** Next.js (App Router) + React + TypeScript
-- **API:** Next.js route handlers (a dedicated FastAPI/Node service can be split out later)
+**Python-first** (ported from the initial Next.js scaffold — see the DEVLOG).
+
+- **Framework:** FastAPI + Jinja2 templates + HTMX (server-rendered, mobile-first)
+- **API:** FastAPI routes; JSON contracts preserved under `/api/*`
 - **Data:** mock catalog today → PostgreSQL + vector DB (Pinecone/Weaviate) later
 - **Hosting (planned):** AWS/GCP, Mumbai/Hyderabad region
+
+> The original Next.js/TypeScript scaffold still lives in `app/`, `components/`,
+> and `lib/`. It's superseded by the Python app and can be removed.
 
 ## Getting started
 
 ```bash
-npm install
-npm run dev      # http://localhost:3000
-```
+python -m venv .venv
+.venv/Scripts/activate        # Windows (PowerShell: .venv\Scripts\Activate.ps1)
+# source .venv/bin/activate   # macOS/Linux
+pip install -r requirements.txt
 
-Other scripts:
-
-```bash
-npm run build    # production build
-npm start        # serve the production build
+python run.py                 # http://127.0.0.1:8000
+# or: uvicorn inkfind.main:app --reload
 ```
 
 ## Project structure
 
 ```
-app/
-  layout.tsx              # root layout + metadata
-  page.tsx                # Smart Search page (client)
-  generate/page.tsx      # AI Design Generator page
-  favorites/page.tsx     # saved collection (localStorage)
-  globals.css            # mobile-first styles
-  api/search/route.ts    # GET /api/search — prompt + filters
-  api/generate/route.ts  # POST /api/generate — prompt + style + variations
-components/
-  SiteHeader.tsx         # brand + nav (Search / Generate / Favorites)
-  SearchControls.tsx     # search bar, image-upload stub, filters
-  ResultsGrid.tsx        # search results grid + cards
-  DesignCard.tsx         # generated design card (save + download)
-lib/
-  types.ts               # domain types + style/body-part/size enums
-  search.ts              # keyword matcher (placeholder for vector search)
-  generate.ts            # mock design generator (placeholder for image-gen API)
-  favorites.ts           # useFavorites hook (localStorage-backed)
-  data/tattoos.ts        # mock tattoo catalog
+inkfind/
+  main.py                 # FastAPI app: pages + HTMX fragments + /api/* JSON
+  models.py               # domain types + style/body-part/size constants
+  data.py                 # mock tattoo catalog (16 designs)
+  search.py               # keyword matcher (placeholder for vector search)
+  generate.py             # mock design generator (placeholder for image-gen API)
+  favorites.py            # server-side saved collection (per-session, in-memory)
+  templates/              # Jinja2: base, index (search), generate, favorites, fragments
+  static/styles.css       # mobile-first dark theme
+run.py                    # dev entrypoint
+requirements.txt
+
+# superseded Next.js scaffold (kept for reference): app/  components/  lib/
 ```
 
 ## AI Design Generator — how it works (MVP)
@@ -75,8 +72,8 @@ lib/
 - **Mock engine:** deterministic placeholder images seeded by (prompt, style, seed,
   index). Swap `lib/generate.ts` for a real image-gen API — `GeneratedDesign`
   contract stays stable.
-- **Favorites:** tap ♥ to save to a personal collection (localStorage today;
-  API-backed once accounts land). Download saves the image locally.
+- **Favorites:** tap ♥ to save to a personal collection (server-side per-session
+  store today; DB-backed once accounts land).
 
 ## Smart Search — how it works (MVP)
 

@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% set active = 'search' %}
+{% import "_macros.html" as m %}
+
+{% block title %}Find your next tattoo{% endblock %}
+{% block tagline %}<p>Find your next tattoo. Generate it. See it on you — before you commit.</p>{% endblock %}
+
+{% block content %}
+{#- The whole form drives search over HTMX: typing + submit, or changing any
+    filter, re-runs /search and swaps the results in. `hx-trigger` on the form
+    fires on submit (prompt) and on filter `change`. -#}
+<form id="search-form"
+      hx-get="/search"
+      hx-target="#search-results"
+      hx-swap="innerHTML"
+      hx-trigger="submit, change from:.filter-group select">
+  <div class="searchbar">
+    <input type="text" name="prompt" value="{{ prompt }}"
+           placeholder='Describe an idea — e.g. "geometric wolf on forearm"'
+           aria-label="Search tattoos by prompt" />
+    <button type="submit" class="btn btn-primary">Search</button>
+  </div>
+
+  <div class="image-stub">
+    <span>Or search by image:</span>
+    <label>upload a reference<input type="file" accept="image/*" disabled /></label>
+    <span>(coming soon)</span>
+  </div>
+
+  <div class="filters">
+    <label class="filter-group">
+      <span>Style</span>
+      <select name="style">
+        <option value="">Any</option>
+        {% for s in STYLES %}<option value="{{ s }}">{{ m.cap(s) }}</option>{% endfor %}
+      </select>
+    </label>
+    <label class="filter-group">
+      <span>Body part</span>
+      <select name="bodyPart">
+        <option value="">Any</option>
+        {% for b in BODY_PARTS %}<option value="{{ b }}">{{ m.cap(b) }}</option>{% endfor %}
+      </select>
+    </label>
+    <label class="filter-group">
+      <span>Size</span>
+      <select name="size">
+        <option value="">Any</option>
+        {% for z in SIZES %}<option value="{{ z }}">{{ m.cap(z) }}</option>{% endfor %}
+      </select>
+    </label>
+  </div>
+</form>
+
+<div id="search-results">
+  {% include "_results.html" %}
+</div>
+{% endblock %}
