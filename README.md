@@ -32,9 +32,6 @@ Detailed progress + decisions: [`docs/DEVLOG.md`](./docs/DEVLOG.md).
 - **Data:** mock catalog today → PostgreSQL + vector DB (Pinecone/Weaviate) later
 - **Hosting (planned):** AWS/GCP, Mumbai/Hyderabad region
 
-> The original Next.js/TypeScript scaffold still lives in `app/`, `components/`,
-> and `lib/`. It's superseded by the Python app and can be removed.
-
 ## Getting started
 
 ```bash
@@ -61,8 +58,6 @@ inkfind/
   static/styles.css       # mobile-first dark theme
 run.py                    # dev entrypoint
 requirements.txt
-
-# superseded Next.js scaffold (kept for reference): app/  components/  lib/
 ```
 
 ## AI Design Generator — how it works (MVP)
@@ -70,7 +65,7 @@ requirements.txt
 - **Style presets** (fine-line, traditional, blackwork, watercolor, geometric, …) as chips.
 - **Variations:** 4 per generate; **Regenerate** reseeds for a fresh set.
 - **Mock engine:** deterministic placeholder images seeded by (prompt, style, seed,
-  index). Swap `lib/generate.ts` for a real image-gen API — `GeneratedDesign`
+  index). Swap `inkfind/generate.py` for a real image-gen API — `GeneratedDesign`
   contract stays stable.
 - **Favorites:** tap ♥ to save to a personal collection (server-side per-session
   store today; DB-backed once accounts land).
