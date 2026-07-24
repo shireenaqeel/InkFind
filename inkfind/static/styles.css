@@ -463,3 +463,210 @@ body {
   font-size: 0.82rem;
   line-height: 1.4;
 }
+
+/* Tattoo Guide */
+.guide-section {
+  margin-top: 28px;
+}
+.guide-h {
+  margin: 0 0 12px;
+  font-size: 1.05rem;
+  letter-spacing: -0.01em;
+}
+
+.guide-matcher {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.guide-matcher .filter-group {
+  flex: 1;
+  min-width: 130px;
+}
+
+/* Suitability verdict */
+.assessment {
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--muted);
+  border-radius: var(--radius);
+  background: var(--surface);
+  padding: 14px 16px;
+}
+.assessment.level-good {
+  border-left-color: #46d17e;
+}
+.assessment.level-ok {
+  border-left-color: #e8b64a;
+}
+.assessment.level-warn {
+  border-left-color: #ff8080;
+}
+.assessment-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 10px;
+}
+.assessment-rating {
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+.assessment-pair {
+  color: var(--muted);
+  font-size: 0.85rem;
+  text-transform: capitalize;
+}
+.assessment-notes {
+  margin: 10px 0 0;
+  padding-left: 18px;
+  color: var(--text);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+.assessment-notes li {
+  margin-bottom: 4px;
+}
+
+/* Style cards */
+.guide-cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+@media (min-width: 640px) {
+  .guide-cards {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.guide-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px;
+}
+.guide-card h4 {
+  margin: 0 0 6px;
+  font-size: 0.98rem;
+}
+.guide-card p {
+  margin: 0;
+  font-size: 0.86rem;
+  line-height: 1.45;
+  color: var(--text);
+}
+.guide-meta {
+  margin-top: 8px !important;
+  color: var(--muted) !important;
+  font-size: 0.8rem !important;
+  text-transform: capitalize;
+}
+
+/* Pain + healing table */
+.pain-table {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.pain-row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 6px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+}
+.pain-part {
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+.pain-meter {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  justify-self: start;
+}
+.pip {
+  width: 14px;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--surface-2);
+}
+.pip.on.p1,
+.pip.on.p2 {
+  background: #46d17e;
+}
+.pip.on.p3 {
+  background: #e8b64a;
+}
+.pip.on.p4,
+.pip.on.p5 {
+  background: #ff8080;
+}
+.pain-word {
+  margin-left: 6px;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+.pain-heal {
+  grid-column: 1;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.pain-note {
+  grid-column: 1 / -1;
+  margin: 2px 0 0;
+  font-size: 0.84rem;
+  line-height: 1.45;
+  color: var(--text);
+}
+.guide-foot {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+/* Aftercare */
+.aftercare {
+  margin: 0;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.aftercare li {
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+/* Hygiene checklist */
+.checklist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.checklist li {
+  display: flex;
+  gap: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+.check-tick {
+  color: #46d17e;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.check-why {
+  color: var(--muted);
+  font-size: 0.84rem;
+}

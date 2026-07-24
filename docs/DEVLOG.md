@@ -5,6 +5,55 @@ Newest entries at the top. Keep this updated as each slice progresses.
 
 ---
 
+## 2026-07-25 — Slice 4: Tattoo Guide
+
+**Goal:** Prove MVP feature #4 — the educational layer that lets someone walk into a
+studio informed. Completes the MVP loop (search/generate → try on → **learn & book
+confidently**).
+
+**What was built**
+- `guide.py` — a curated, deterministic knowledge base: per-style placement
+  suitability + blurbs, per-body-part pain (1–5) & healing reference, aftercare
+  steps, and an India-specific **hygiene & safety checklist** (cites the March 2025
+  Karnataka FDA heavy-metal ink flags from the product plan). Plus `assess(style,
+  body_part)` → a suitability verdict, and `guide_data()` for the API.
+- `GET /guide` page (`templates/guide.html`) + nav link "Guide": an interactive
+  **style→placement matcher** (two selects, HTMX-swaps a verdict fragment
+  `_assessment.html`), then style cards, a pain/healing table, aftercare, and the
+  checklist. Deep-linkable via `/guide?style=&bodyPart=`.
+- `GET /guide/assess` HTMX fragment; `GET /api/guide` JSON (full base, or a single
+  verdict when passed `style`+`bodyPart`; 400 on unknown values).
+- Loop touch: the Try It On page now links to the guide with the style preselected
+  ("Not sure a spot suits the style? → guide").
+
+**Decisions**
+- **Content as data, not prose in a template** (`guide.py`) — keeps it testable, lets
+  the matcher and the JSON API share one source, and makes it swappable for a CMS/DB
+  later without touching the UI.
+- **Suitability is rule-based, not ML** — a style's `detail` (fine/bold) crossed with
+  a small high-friction set drives the verdict. Honest for an MVP and easy to reason
+  about; a data/ML ranking can slot behind the same `assess()` signature.
+- **Explicitly framed as general guidance, not medical advice** — pain/healing numbers
+  are rough, widely-cited references with per-person caveats in the UI.
+- **India-first safety framing** — the checklist leads on ink safety and single-use
+  needles because budget parlours are the product's stated risk; it's the reason this
+  feature exists, not filler.
+
+**Verified**
+- TestClient: `/guide` 200 and includes the matcher, checklist, and the Karnataka
+  reference; `/guide?style=watercolor&bodyPart=wrist` preselects and renders a
+  "Tricky" (level-warn) verdict; `/guide/assess` for traditional/arm → "Great fit"
+  (level-good); `/api/guide` returns the full base (8 styles, 8 body parts) and a
+  single verdict when parametrised; unknown style → 400; nav shows "Guide"; `/`,
+  `/generate`, `/try-on`, `/favorites` still 200.
+
+**Next up**
+- MVP feature set is complete end-to-end on mock data. Next: replace the mocks with
+  real backends — image-gen behind `/generate`, embeddings + vector DB behind search
+  — and add accounts so favorites/collections persist beyond a session.
+
+---
+
 ## 2026-07-24 — Slice 3: Placement Preview ("Try It On")
 
 **Goal:** Prove MVP feature #3 — let a user preview a design on a photo of their

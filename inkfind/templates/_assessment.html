@@ -1,0 +1,14 @@
+{#- Suitability verdict fragment (HTMX target on the Guide page). -#}
+{% import "_macros.html" as m %}
+
+{% if assessment %}
+<div class="assessment level-{{ assessment.level }}">
+  <div class="assessment-head">
+    <span class="assessment-rating">{{ assessment.rating }}</span>
+    <span class="assessment-pair">{{ m.cap(assessment.style) }} · {{ assessment.body_part }}</span>
+  </div>
+  <ul class="assessment-notes">
+    {% for n in assessment.notes %}<li>{{ n }}</li>{% endfor %}
+  </ul>
+</div>
+{% endif %}

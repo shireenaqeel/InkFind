@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% set active = 'guide' %}
+{% import "_macros.html" as m %}
+
+{% block title %}Tattoo Guide{% endblock %}
+
+{% block content %}
+<section class="generator">
+  <h2 class="section-title">Tattoo Guide</h2>
+  <p class="section-sub">
+    Everything to know before you commit — which styles suit which spots, how much
+    it'll hurt, how to heal it, and how to pick a studio that's actually safe.
+  </p>
+</section>
+
+{#- Suitability matcher: pick a style + body part, get a verdict. hx-get re-runs
+    on any change; the fragment swaps into #assessment. -#}
+<section class="guide-section">
+  <h3 class="guide-h">Does this style suit this spot?</h3>
+  <form class="guide-matcher"
+        hx-get="/guide/assess"
+        hx-target="#assessment"
+        hx-swap="innerHTML"
+        hx-trigger="change">
+    <label class="filter-group">
+      <span>Style</span>
+      <select name="style">
+        {% for s in STYLES %}
+          <option value="{{ s }}" {% if s == sel_style %}selected{% endif %}>{{ m.cap(s) }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label class="filter-group">
+      <span>Body part</span>
+      <select name="bodyPart">
+        {% for b in BODY_PARTS %}
+          <option value="{{ b }}" {% if b == sel_body %}selected{% endif %}>{{ m.cap(b) }}</option>
+        {% endfor %}
+      </select>
+    </label>
+  </form>
+  <div id="assessment">
+    {% include "_assessment.html" %}
+  </div>
+</section>
+
+{#- Style reference -#}
+<section class="guide-section">
+  <h3 class="guide-h">Styles at a glance</h3>
+  <div class="guide-cards">
+    {% for s in STYLES %}{% set g = styles[s] %}
+      <div class="guide-card">
+        <h4>{{ m.cap(s) }}</h4>
+        <p>{{ g.blurb }}</p>
+        <p class="guide-meta">Best on: {{ g.best_placements | join(', ') }}</p>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+{#- Pain + healing reference -#}
+<section class="guide-section">
+  <h3 class="guide-h">Pain &amp; healing by body part</h3>
+  <div class="pain-table">
+    {% for b in BODY_PARTS %}{% set bg = body_parts[b] %}
+      <div class="pain-row">
+        <div class="pain-part">{{ m.cap(b) }}</div>
+        <div class="pain-meter" aria-label="Pain {{ bg.pain }} of 5">
+          {% for i in range(1, 6) %}
+            <span class="pip {% if i <= bg.pain %}on p{{ bg.pain }}{% endif %}"></span>
+          {% endfor %}
+          <span class="pain-word">{{ pain_label(bg.pain) }}</span>
+        </div>
+        <div class="pain-heal">Heals {{ bg.healing }}</div>
+        <p class="pain-note">{{ bg.note }}</p>
+      </div>
+    {% endfor %}
+  </div>
+  <p class="guide-foot">Pain varies from person to person — treat this as a rough guide. Full healing under the skin takes ~2–3 months for any tattoo.</p>
+</section>
+
+{#- Aftercare -#}
+<section class="guide-section">
+  <h3 class="guide-h">Aftercare basics</h3>
+  <ol class="aftercare">
+    {% for step in aftercare %}
+      <li><strong>{{ step.phase }}.</strong> {{ step.tip }}</li>
+    {% endfor %}
+  </ol>
+</section>
+
+{#- Hygiene & safety — India context -#}
+<section class="guide-section">
+  <h3 class="guide-h">Hygiene &amp; safety checklist</h3>
+  <p class="section-sub">Cheaper parlours often skip these. In March 2025 the Karnataka FDA flagged heavy-metal contamination in tattoo ink — safety isn't the place to save money.</p>
+  <ul class="checklist">
+    {% for item in hygiene %}
+      <li>
+        <span class="check-tick">✓</span>
+        <span><strong>{{ item.check }}</strong><br /><span class="check-why">{{ item.why }}</span></span>
+      </li>
+    {% endfor %}
+  </ul>
+</section>
+{% endblock %}

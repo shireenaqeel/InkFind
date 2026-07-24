@@ -23,6 +23,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from . import favorites as favs
+from . import guide as guide_mod
 from .generate import generate
 from .models import BODY_PARTS, SIZES, STYLES, GeneratedDesign
 from .search import search
@@ -143,6 +144,48 @@ def generate_fragment(
     return _with_sid(resp, sid)
 
 
+@app.get("/guide", response_class=HTMLResponse)
+def guide_page(
+    request: Request,
+    style: str | None = None,
+    bodyPart: str | None = None,
+) -> Response:
+    # Optional style/bodyPart preselect the suitability matcher (deep-linkable).
+    sid = _sid(request)
+    sel_style = _clean(style, STYLES) or "fine-line"
+    sel_body = _clean(bodyPart, BODY_PARTS) or "forearm"
+    resp = templates.TemplateResponse(
+        request, "guide.html",
+        {
+            "styles": guide_mod.STYLE_GUIDE,
+            "body_parts": guide_mod.BODY_PART_GUIDE,
+            "pain_label": guide_mod.pain_label,
+            "aftercare": guide_mod.AFTERCARE,
+            "hygiene": guide_mod.HYGIENE_CHECKLIST,
+            "sel_style": sel_style,
+            "sel_body": sel_body,
+            "assessment": guide_mod.assess(sel_style, sel_body),
+        },
+    )
+    return _with_sid(resp, sid)
+
+
+@app.get("/guide/assess", response_class=HTMLResponse)
+def guide_assess(
+    request: Request,
+    style: str | None = None,
+    bodyPart: str | None = None,
+) -> Response:
+    sid = _sid(request)
+    sel_style = _clean(style, STYLES) or "fine-line"
+    sel_body = _clean(bodyPart, BODY_PARTS) or "forearm"
+    resp = templates.TemplateResponse(
+        request, "_assessment.html",
+        {"assessment": guide_mod.assess(sel_style, sel_body)},
+    )
+    return _with_sid(resp, sid)
+
+
 @app.get("/favorites", response_class=HTMLResponse)
 def favorites_page(request: Request) -> Response:
     sid = _sid(request)
@@ -206,6 +249,19 @@ def api_search(
         for r in results
     ]
     return JSONResponse({"count": len(payload), "results": payload})
+
+
+@app.get("/api/guide")
+def api_guide(style: str | None = None, bodyPart: str | None = None) -> JSONResponse:
+    # With both params, return the suitability verdict; otherwise the full guide.
+    if style is not None or bodyPart is not None:
+        result = guide_mod.assess(
+            _clean(style, STYLES) or "", _clean(bodyPart, BODY_PARTS) or "",
+        )
+        if result is None:
+            return JSONResponse({"error": "unknown style or bodyPart"}, status_code=400)
+        return JSONResponse(result)
+    return JSONResponse(guide_mod.guide_data())
 
 
 @app.post("/api/generate")

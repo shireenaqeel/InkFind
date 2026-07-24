@@ -19,7 +19,7 @@ Building the MVP one vertical slice at a time (UI → API → data with mock dat
 | 1 | Smart Search & Discovery | 🟢 scaffolded (mock data, keyword matcher) |
 | 2 | AI Design Generator | 🟢 scaffolded (mock gen, variations, favorites) |
 | 3 | Placement Preview ("Try It On") | 🟢 scaffolded (canvas: drag/resize/rotate/blend + download) |
-| 4 | Tattoo Guide | ⚪ not started |
+| 4 | Tattoo Guide | 🟢 scaffolded (style→placement matcher, pain/healing, aftercare, hygiene checklist) |
 
 Detailed progress + decisions: [`docs/DEVLOG.md`](./docs/DEVLOG.md).
 
@@ -54,7 +54,8 @@ inkfind/
   search.py               # keyword matcher (placeholder for vector search)
   generate.py             # mock design generator (placeholder for image-gen API)
   favorites.py            # server-side saved collection (per-session, in-memory)
-  templates/              # Jinja2: base, index (search), generate, tryon, favorites, fragments
+  guide.py                # tattoo guide knowledge base + style/placement matcher
+  templates/              # Jinja2: base, index (search), generate, tryon, guide, favorites, fragments
   static/styles.css       # mobile-first dark theme
   static/tryon.js         # client-side placement-preview canvas compositor
 run.py                    # dev entrypoint
@@ -82,6 +83,18 @@ requirements.txt
   opens `/try-on` with that design **preloaded** onto the canvas.
 - **Client-side by design:** canvas compositing is inherently browser-side
   (`static/tryon.js`) — the seam where a real skin-tone/lighting blend model slots in.
+
+## Tattoo Guide — how it works (MVP)
+
+- **Style→placement matcher:** pick a style + body part and get a suitability verdict
+  (Great fit / Workable / Tricky) with the reasoning — fine-detail styles are flagged
+  on high-friction spots where they blur soonest. Deep-linkable via
+  `/guide?style=&bodyPart=`.
+- **Reference content:** styles at a glance, a pain (1–5) + healing table per body
+  part, aftercare basics, and a **hygiene & safety checklist** tuned for India (it
+  cites the March 2025 Karnataka FDA heavy-metal-in-ink flags).
+- **Data-driven:** all content lives in `inkfind/guide.py`; `GET /api/guide` returns
+  the whole knowledge base, or a single verdict when passed `style` + `bodyPart`.
 
 ## Smart Search — how it works (MVP)
 
