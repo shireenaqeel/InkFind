@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% set active = 'tryon' %}
+{% import "_macros.html" as m %}
+
+{% block title %}Try It On{% endblock %}
+
+{% block content %}
+<section class="generator">
+  <h2 class="section-title">Try It On</h2>
+  <p class="section-sub">
+    Upload a photo of the spot you're considering, then drag, resize &amp; rotate a
+    design onto it to preview the placement before you commit.
+  </p>
+</section>
+
+{#- The canvas compositor is driven client-side (static/tryon.js). Any preloaded
+    design is passed in via data-* attributes — this is the Generate/Search loop. -#}
+<div class="tryon"
+     data-design="{{ design }}"
+     data-prompt="{{ prompt }}"
+     data-style="{{ style }}">
+
+  <div class="tryon-stage">
+    <canvas id="tryon-canvas" class="tryon-canvas" width="600" height="800"></canvas>
+    <div id="tryon-placeholder" class="tryon-placeholder">
+      <p>Upload a photo of the body part<br />you want to preview the tattoo on.</p>
+      <label class="btn btn-primary">
+        Upload photo
+        <input id="body-input" type="file" accept="image/*" hidden />
+      </label>
+    </div>
+  </div>
+
+  <div id="tryon-controls" class="tryon-controls" hidden>
+    <div class="tryon-uploads">
+      <label class="file-link">Change photo<input id="body-input-2" type="file" accept="image/*" hidden /></label>
+      <label class="file-link">{{ 'Change design' if design else 'Upload design' }}<input id="design-input" type="file" accept="image/*" hidden /></label>
+    </div>
+
+    <div class="tryon-sliders">
+      <label class="ctrl">
+        <span>Size</span>
+        <input id="ctrl-scale" type="range" min="5" max="150" value="40" />
+      </label>
+      <label class="ctrl">
+        <span>Rotation</span>
+        <input id="ctrl-rotate" type="range" min="-180" max="180" value="0" />
+      </label>
+      <label class="ctrl">
+        <span>Opacity</span>
+        <input id="ctrl-opacity" type="range" min="20" max="100" value="90" />
+      </label>
+      <label class="ctrl">
+        <span>Skin blend</span>
+        <select id="ctrl-blend">
+          <option value="source-over">Normal</option>
+          <option value="multiply" selected>Multiply (ink on skin)</option>
+          <option value="overlay">Overlay</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="tryon-actions">
+      <button id="btn-reset" type="button" class="btn btn-ghost">Reset</button>
+      <button id="btn-download" type="button" class="btn btn-primary">Download preview</button>
+    </div>
+
+    <p id="tryon-hint" class="tryon-hint">
+      Drag the design on the photo to reposition it. Everything runs on your device —
+      the photo is never uploaded.
+    </p>
+  </div>
+</div>
+
+<script src="/static/tryon.js" defer></script>
+{% endblock %}

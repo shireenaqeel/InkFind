@@ -87,6 +87,25 @@ def search_fragment(
     return _with_sid(resp, sid)
 
 
+@app.get("/try-on", response_class=HTMLResponse)
+def try_on_page(
+    request: Request,
+    design: str | None = None,
+    prompt: str = "",
+    style: str = "",
+) -> Response:
+    # `design`/`prompt`/`style` may be passed from a search or generated card so
+    # the design is preloaded onto the canvas — this is the Generate/Search -> Try
+    # It On loop. Compositing itself is client-side (see static/tryon.js): the body
+    # photo never leaves the browser.
+    sid = _sid(request)
+    resp = templates.TemplateResponse(
+        request, "tryon.html",
+        {"design": design or "", "prompt": prompt.strip(), "style": _clean(style, STYLES) or ""},
+    )
+    return _with_sid(resp, sid)
+
+
 @app.get("/generate", response_class=HTMLResponse)
 def generate_page(request: Request) -> Response:
     sid = _sid(request)

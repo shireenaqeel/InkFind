@@ -40,6 +40,7 @@ body {
 }
 .header-top {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
@@ -56,6 +57,7 @@ body {
 }
 .nav {
   display: flex;
+  flex-wrap: wrap;
   gap: 4px;
 }
 .nav-link {
@@ -333,4 +335,131 @@ body {
 .heart-form {
   margin: 0;
   display: contents;
+}
+
+/* "Try it on" link on search/generated cards — feeds the placement-preview loop */
+.try-on-link {
+  display: inline-block;
+  margin-top: 8px;
+  color: var(--accent);
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+.try-on-link:hover {
+  text-decoration: underline;
+}
+
+/* Placement Preview ("Try It On") */
+.tryon {
+  margin-top: 18px;
+}
+.tryon-stage {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px;
+}
+.tryon-canvas {
+  display: block;
+  width: 100%;
+  max-width: 420px;
+  height: auto;
+  border-radius: 10px;
+  background: var(--surface-2);
+  touch-action: none; /* let the canvas own drag gestures instead of scrolling */
+  cursor: grab;
+}
+.tryon-canvas:active {
+  cursor: grabbing;
+}
+.tryon-placeholder {
+  position: absolute;
+  inset: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  text-align: center;
+  color: var(--muted);
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+  background: var(--surface-2);
+}
+.tryon-placeholder p {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.tryon-controls {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.tryon-uploads {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.file-link {
+  color: var(--accent);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.tryon-sliders {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+@media (min-width: 640px) {
+  .tryon-sliders {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.ctrl {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.ctrl span {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+.ctrl input[type="range"] {
+  width: 100%;
+  accent-color: var(--accent);
+}
+.ctrl select {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 10px;
+  padding: 8px 10px;
+  font-size: 0.9rem;
+}
+
+.tryon-actions {
+  display: flex;
+  gap: 10px;
+}
+.tryon-actions .btn {
+  flex: 1;
+  padding: 12px 18px;
+}
+.tryon-hint {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.4;
 }

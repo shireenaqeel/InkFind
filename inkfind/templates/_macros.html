@@ -31,6 +31,7 @@
   <div class="card-body">
     <h3>{{ design.prompt }}</h3>
     <div class="tags"><span class="tag">{{ design.style|replace('-', ' ') }}</span></div>
+    <a class="try-on-link" href="/try-on?design={{ design.image_url|urlencode }}&prompt={{ design.prompt|urlencode }}&style={{ design.style|urlencode }}">Try it on →</a>
   </div>
 </div>
 {% endmacro %}
@@ -46,6 +47,7 @@
     <div class="tags">
       {% for tag in t.tags[:3] %}<span class="tag">{{ tag }}</span>{% endfor %}
     </div>
+    <a class="try-on-link" href="/try-on?design={{ t.image_url|urlencode }}&prompt={{ t.title|urlencode }}&style={{ t.style|urlencode }}">Try it on →</a>
   </div>
 </div>
 {% endmacro %}

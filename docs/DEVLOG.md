@@ -5,6 +5,53 @@ Newest entries at the top. Keep this updated as each slice progresses.
 
 ---
 
+## 2026-07-24 — Slice 3: Placement Preview ("Try It On")
+
+**Goal:** Prove MVP feature #3 — let a user preview a design on a photo of their
+own body before committing. This is the feature that most directly attacks the
+"41% of regret is placement" problem.
+
+**What was built**
+- New page `GET /try-on` (`main.py`, `templates/tryon.html`) + nav link "Try On".
+- Canvas compositor (`static/tryon.js`): upload a body-part photo → it becomes the
+  background; a design overlays on top with **drag to reposition** (Pointer Events,
+  so touch + mouse), **size / rotation / opacity** sliders, and a **skin-blend**
+  mode (Normal / Multiply / Overlay). **Download** exports the composite as PNG.
+- Wired the **core loop**: every search result and every generated/saved design now
+  has a "Try it on →" link that opens `/try-on?design=&prompt=&style=` with the
+  design **preloaded** onto the canvas (`_macros.html`). Generate/Search → Try It On.
+
+**Decisions**
+- **Client-side compositing (vanilla JS), not a server round-trip.** Canvas warping/
+  blending is inherently browser-side, and keeping the body photo on-device is the
+  right privacy default (esp. for the India market). The server's role is the
+  server-rendered page + the query-param preload that carries the loop. No new deps.
+- **Transform stored as fractions of the canvas** (position 0..1, size as a % of
+  canvas width) so swapping the photo for one with different pixel dimensions
+  doesn't make the design jump.
+- **`crossOrigin="anonymous"` on preloaded designs** so a picsum/remote design
+  doesn't taint the canvas and block PNG export; uploaded designs are data URLs.
+- **Multiply as the default blend** — approximates ink sitting in skin. It's a
+  stand-in for real skin-tone/lighting compositing; the slider set is the seam a
+  better blend model slots into later.
+- **Delta-based drag** (grab-and-nudge) rather than snap-to-finger, so the design
+  doesn't jump to the touch point on first contact.
+
+**Verified**
+- TestClient: `/try-on` 200 and renders the canvas + loads `tryon.js`;
+  `/static/tryon.js` 200; preload params (`design`/`prompt`/`style`) land in the
+  page's `data-*`; an invalid `style` is dropped to `""`; search **and** generated
+  cards both carry `/try-on?design=` links; nav shows "Try On"; `/`, `/generate`,
+  `/favorites` still 200.
+
+**Next up**
+- Slice 4: Tattoo Guide (style→placement suitability, pain/healing, aftercare,
+  hygiene & safety checklist) — completes the MVP loop.
+- Real image-gen behind `/generate`; transparent-PNG designs will make the blend
+  read much better than opaque placeholder photos.
+
+---
+
 ## 2026-07-13 — Port to Python (FastAPI + Jinja2 + HTMX)
 
 **Goal:** Re-platform the app to be Python-first per request ("can we do this

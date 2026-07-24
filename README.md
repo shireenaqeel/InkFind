@@ -18,7 +18,7 @@ Building the MVP one vertical slice at a time (UI → API → data with mock dat
 |---|-------------|--------|
 | 1 | Smart Search & Discovery | 🟢 scaffolded (mock data, keyword matcher) |
 | 2 | AI Design Generator | 🟢 scaffolded (mock gen, variations, favorites) |
-| 3 | Placement Preview ("Try It On") | ⚪ not started |
+| 3 | Placement Preview ("Try It On") | 🟢 scaffolded (canvas: drag/resize/rotate/blend + download) |
 | 4 | Tattoo Guide | ⚪ not started |
 
 Detailed progress + decisions: [`docs/DEVLOG.md`](./docs/DEVLOG.md).
@@ -54,8 +54,9 @@ inkfind/
   search.py               # keyword matcher (placeholder for vector search)
   generate.py             # mock design generator (placeholder for image-gen API)
   favorites.py            # server-side saved collection (per-session, in-memory)
-  templates/              # Jinja2: base, index (search), generate, favorites, fragments
+  templates/              # Jinja2: base, index (search), generate, tryon, favorites, fragments
   static/styles.css       # mobile-first dark theme
+  static/tryon.js         # client-side placement-preview canvas compositor
 run.py                    # dev entrypoint
 requirements.txt
 ```
@@ -69,6 +70,18 @@ requirements.txt
   contract stays stable.
 - **Favorites:** tap ♥ to save to a personal collection (server-side per-session
   store today; DB-backed once accounts land).
+
+## Placement Preview ("Try It On") — how it works (MVP)
+
+- **Upload a body-part photo** — it becomes the canvas background. The photo stays
+  entirely **on-device**; nothing is uploaded.
+- **Place the design:** drag to reposition (touch + mouse), plus size, rotation and
+  opacity sliders and a **skin-blend** mode (Normal / Multiply / Overlay) that
+  approximates ink sitting in skin. **Download** exports the composite as a PNG.
+- **The loop:** any search result or generated design has a "Try it on →" link that
+  opens `/try-on` with that design **preloaded** onto the canvas.
+- **Client-side by design:** canvas compositing is inherently browser-side
+  (`static/tryon.js`) — the seam where a real skin-tone/lighting blend model slots in.
 
 ## Smart Search — how it works (MVP)
 
