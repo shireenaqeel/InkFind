@@ -17,13 +17,17 @@ from __future__ import annotations
 import uuid
 from pathlib import Path
 
+from dotenv import load_dotenv
 from fastapi import FastAPI, Form, Request, Response
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
+load_dotenv()  # pick up REPLICATE_API_TOKEN etc. from a local .env, if present
+
 from . import favorites as favs
 from . import guide as guide_mod
+from . import imagegen
 from .generate import generate
 from .models import BODY_PARTS, SIZES, STYLES, GeneratedDesign
 from .search import search
@@ -110,7 +114,9 @@ def try_on_page(
 @app.get("/generate", response_class=HTMLResponse)
 def generate_page(request: Request) -> Response:
     sid = _sid(request)
-    resp = templates.TemplateResponse(request, "generate.html", {"style": "fine-line"})
+    resp = templates.TemplateResponse(
+        request, "generate.html", {"style": "fine-line", "live": imagegen.is_enabled()},
+    )
     return _with_sid(resp, sid)
 
 

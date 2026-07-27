@@ -7,9 +7,14 @@
 {% block content %}
 <section class="generator">
   <h2 class="section-title">AI Design Generator</h2>
-  <p class="section-sub">Describe an idea, pick a style, and generate original variations.</p>
+  <p class="section-sub">
+    Describe an idea, pick a style, and generate original variations.
+    {% if live %}<span class="gen-badge live">● Live AI</span>
+    {% else %}<span class="gen-badge demo">Demo mode · placeholder images</span>{% endif %}
+  </p>
 
-  <form id="gen-form" hx-post="/generate" hx-target="#gen-results" hx-swap="innerHTML">
+  <form id="gen-form" hx-post="/generate" hx-target="#gen-results" hx-swap="innerHTML"
+        hx-indicator="#gen-spinner" hx-disabled-elt="find button[type='submit']">
     <div class="searchbar">
       <input type="text" name="prompt"
              placeholder='e.g. "a phoenix rising with peony flowers"'
@@ -28,6 +33,10 @@
     </div>
   </form>
 </section>
+
+<div id="gen-spinner" class="gen-spinner htmx-indicator">
+  <span class="gen-spin-mark">✦</span> Inking your designs…
+</div>
 
 <div id="gen-results">
   <div class="empty">Your generated designs will appear here. Tap a ♥ to save favorites.</div>

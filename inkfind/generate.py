@@ -1,27 +1,31 @@
-"""Mock AI design generator.
+"""AI design generator.
 
-MVP scaffold strategy: instead of calling a diffusion model, we produce
-deterministic placeholder images seeded by (prompt, style, seed, index). This
-lets the full generate -> vary -> regenerate -> save loop work end-to-end with no
-AI dependency. Swap `generate()` internals for a real image-gen API later; the
-GeneratedDesign contract stays the same so the UI doesn't change.
+Real generation runs through ``imagegen`` (Replicate/FLUX) when a token is set;
+otherwise it falls back to deterministic placeholder images so the full generate ->
+vary -> regenerate -> save loop works with zero configuration. Either way the
+``GeneratedDesign`` contract is identical, so the UI never changes.
 
-Ports `lib/generate.ts`, including the FNV-1a hash, so the placeholder image
-URLs are byte-for-byte identical to the original scaffold for the same inputs.
+The mock path ports ``lib/generate.ts`` (FNV-1a hash) so placeholder image URLs are
+byte-for-byte identical to the original scaffold for the same inputs.
 """
 
 from __future__ import annotations
 
+import logging
+import random
 import time
 
+from . import imagegen
 from .models import GeneratedDesign
+
+log = logging.getLogger("inkfind.generate")
 
 DEFAULT_COUNT = 4
 MAX_COUNT = 8
 
 
 def _hash(s: str) -> int:
-    """Tiny stable FNV-1a 32-bit hash → used to seed placeholder image URLs."""
+    """Tiny stable FNV-1a 32-bit hash → used to seed placeholder image URLs and ids."""
     h = 2166136261
     for ch in s:
         h ^= ord(ch)
@@ -34,6 +38,11 @@ def _slug(prompt: str, style: str, seed: int, index: int) -> str:
     return str(_hash(base))
 
 
+def _mock_url(slug: str) -> str:
+    # Deterministic placeholder render; stable per seed so ids dedupe in favorites.
+    return f"https://picsum.photos/seed/{slug}/600/800"
+
+
 def generate(
     prompt: str,
     style: str,
@@ -41,20 +50,31 @@ def generate(
     seed: int | None = None,
 ) -> list[GeneratedDesign]:
     prompt = (prompt or "").strip()
-    seed = seed if seed is not None else 0
+    # A fresh random seed per call (unless pinned) makes each Generate/Regenerate a
+    # new set, while keeping ids stable within the returned batch for dedupe.
+    seed = seed if seed is not None else random.randint(1, 2_000_000_000)
     count = min(max(count if count is not None else DEFAULT_COUNT, 1), MAX_COUNT)
     created_at = int(time.time() * 1000)
 
+    image_urls: list[str] | None = None
+    if imagegen.is_enabled():
+        try:
+            image_urls = imagegen.generate_images(prompt, style, count, seed)
+        except Exception as exc:  # noqa: BLE001 — degrade gracefully to the mock
+            log.warning("Real generation failed, falling back to mock: %s", exc)
+            image_urls = None
+
     designs: list[GeneratedDesign] = []
-    for index in range(count):
-        s = _slug(prompt, style, seed, index)
+    n = len(image_urls) if image_urls else count
+    for index in range(n):
+        slug = _slug(prompt, style, seed, index)
+        url = image_urls[index] if image_urls else _mock_url(slug)
         designs.append(
             GeneratedDesign(
-                id=s,
+                id=slug,
                 prompt=prompt,
                 style=style,
-                # Placeholder render; deterministic per seed so "regenerate" yields a new set.
-                image_url=f"https://picsum.photos/seed/{s}/600/800",
+                image_url=url,
                 created_at=created_at,
             )
         )

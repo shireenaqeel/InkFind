@@ -17,7 +17,7 @@ Building the MVP one vertical slice at a time (UI → API → data with mock dat
 | # | MVP feature | Status |
 |---|-------------|--------|
 | 1 | Smart Search & Discovery | 🟢 scaffolded (mock data, keyword matcher) |
-| 2 | AI Design Generator | 🟢 scaffolded (mock gen, variations, favorites) |
+| 2 | AI Design Generator | 🟢 real generation (Replicate/FLUX) + mock fallback |
 | 3 | Placement Preview ("Try It On") | 🟢 scaffolded (canvas: drag/resize/rotate/blend + download) |
 | 4 | Tattoo Guide | 🟢 scaffolded (style→placement matcher, pain/healing, aftercare, hygiene checklist) |
 
@@ -52,7 +52,8 @@ inkfind/
   models.py               # domain types + style/body-part/size constants
   data.py                 # mock tattoo catalog (16 designs)
   search.py               # keyword matcher (placeholder for vector search)
-  generate.py             # mock design generator (placeholder for image-gen API)
+  generate.py             # design generator — real (via imagegen) with mock fallback
+  imagegen.py             # Replicate/FLUX image generation (optional, token-gated)
   favorites.py            # server-side saved collection (per-session, in-memory)
   guide.py                # tattoo guide knowledge base + style/placement matcher
   templates/              # Jinja2: base, index (search), generate, tryon, guide, favorites, fragments
@@ -66,11 +67,18 @@ requirements.txt
 
 - **Style presets** (fine-line, traditional, blackwork, watercolor, geometric, …) as chips.
 - **Variations:** 4 per generate; **Regenerate** reseeds for a fresh set.
-- **Mock engine:** deterministic placeholder images seeded by (prompt, style, seed,
-  index). Swap `inkfind/generate.py` for a real image-gen API — `GeneratedDesign`
-  contract stays stable.
+- **Real generation:** with a `REPLICATE_API_TOKEN` set, `/generate` produces real
+  images via Replicate (default FLUX.1 [schnell]; per-style prompt tuning in
+  `inkfind/imagegen.py`, model swappable via `REPLICATE_MODEL`). A **Live AI** badge
+  and an "Inking…" spinner show while it runs.
+- **Mock fallback:** with no token — or if a generation fails — it falls back to
+  deterministic placeholder images, so the app always works. The `GeneratedDesign`
+  contract is identical either way, so the UI never changes.
 - **Favorites:** tap ♥ to save to a personal collection (server-side per-session
   store today; DB-backed once accounts land).
+
+> To enable real generation: copy `.env.example` to `.env`, add your
+> `REPLICATE_API_TOKEN` (from https://replicate.com/account/api-tokens), and restart.
 
 ## Placement Preview ("Try It On") — how it works (MVP)
 

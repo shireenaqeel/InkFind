@@ -684,6 +684,57 @@ a {
   line-height: 1.55;
 }
 
+/* --- Generator: live/demo badge + inking spinner --------------------------- */
+.gen-badge {
+  display: inline-block;
+  margin-left: 6px;
+  font-family: "Oswald", sans-serif;
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border: 1.5px solid var(--ink);
+  vertical-align: middle;
+}
+.gen-badge.live {
+  background: var(--red);
+  border-color: var(--red);
+  color: var(--paper);
+}
+.gen-badge.demo {
+  background: var(--paper);
+  color: var(--ink-soft);
+}
+
+/* htmx toggles .htmx-request on the indicator during a request. */
+.gen-spinner {
+  display: none;
+  margin: 22px 0 4px;
+  padding: 16px 18px;
+  border: 2px dashed var(--ink);
+  background: var(--paper-2);
+  font-family: "Oswald", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.gen-spinner.htmx-request {
+  display: block;
+}
+.gen-spin-mark {
+  display: inline-block;
+  color: var(--red);
+  animation: gen-spin 1.1s linear infinite;
+}
+@keyframes gen-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 /* ============================================================================
    Placement Preview ("Try It On")
    ========================================================================== */

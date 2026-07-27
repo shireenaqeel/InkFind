@@ -5,6 +5,50 @@ Newest entries at the top. Keep this updated as each slice progresses.
 
 ---
 
+## 2026-07-28 — Real AI generation (Replicate/FLUX) behind /generate
+
+**Goal:** Replace the mock generator's placeholder images with real image
+generation — the first mock→real backend swap — without changing the UI or the
+`GeneratedDesign` contract.
+
+**What was built**
+- `imagegen.py` — Replicate integration. Default model **FLUX.1 [schnell]** (fast,
+  cheap, up to 4 images/call, `seed` for reproducible regenerate). Per-style prompt
+  modifiers (`STYLE_PROMPTS`) steer the look; uses Replicate's `Prefer: wait` with a
+  short poll fallback. Model overridable via `REPLICATE_MODEL`.
+- `generate.py` — now calls `imagegen` when a token is set, else falls back to the
+  deterministic picsum mock. **Any failure degrades gracefully to the mock** (logged),
+  so the app never breaks. Also fixed regenerate to actually reseed: a fresh random
+  `seed` per call (unless pinned), with ids still stable within a batch for dedupe.
+- Config via `.env` (`load_dotenv()` in `main.py`); `.env.example` documents
+  `REPLICATE_API_TOKEN` + `REPLICATE_MODEL`. Deps: `httpx`, `python-dotenv`.
+- UI: `/generate` shows a **Live AI / Demo mode** badge (from `imagegen.is_enabled()`),
+  an "Inking your designs…" HTMX spinner (`hx-indicator`), and disables the
+  Generate/Regenerate buttons mid-request (`hx-disabled-elt`).
+
+**Decisions**
+- **Replicate** (user's pick) — model choice + tattoo-specific fine-tunes/LoRAs, swap
+  via one env var. **Mock fallback** kept so the repo runs with zero keys and demos work.
+- **Optional-by-default**: no token → identical behavior to before. The token is the
+  only thing standing between demo and live.
+- **URLs used as-is** — Replicate output URLs are hosted ~1h. Fine for MVP; a later
+  step should download + persist images so saved favorites don't expire (noted below).
+
+**Verified**
+- No token: `is_enabled()` False; `generate()` returns 4 deterministic picsum designs;
+  regenerate now yields a different set; `/generate` shows the Demo badge; POST
+  `/generate` + `/api/generate` return 4.
+- Dummy token: real path is attempted, 401 is caught, and it **falls back to mock** (4
+  designs, picsum URLs) with a logged warning — graceful degradation confirmed.
+- Real end-to-end (valid token) is pending a key from the user.
+
+**Next up**
+- Add a valid `REPLICATE_API_TOKEN` to `.env` and confirm live generations.
+- Persist generated images (download to storage) so favorites survive URL expiry.
+- Freemium generation limits (₹ plan) once accounts land.
+
+---
+
 ## 2026-07-25 — Slice 4: Tattoo Guide
 
 **Goal:** Prove MVP feature #4 — the educational layer that lets someone walk into a
