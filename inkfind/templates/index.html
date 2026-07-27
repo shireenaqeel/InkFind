@@ -3,13 +3,21 @@
 {% import "_macros.html" as m %}
 
 {% block title %}Find your next tattoo{% endblock %}
-{% block tagline %}<p>Find your next tattoo. Generate it. See it on you — before you commit.</p>{% endblock %}
 
 {% block content %}
+<section class="hero">
+  <span class="eyebrow">✦ AI Tattoo Studio · Est. 2026 · India ✦</span>
+  <h1 class="hero-title">Find your next<br />tattoo. <span class="grad">See it<br />on you.</span></h1>
+  <p class="hero-sub">
+    Search the flash, dream up new ink with AI, preview it on a photo of your own
+    body, and learn what actually suits you — all before the needle ever touches skin.
+  </p>
+  <div class="hero-rule"><span>Search</span><i>✦</i><span>Generate</span><i>✦</i><span>Try On</span><i>✦</i><span>Learn</span></div>
+</section>
+
 {#- The whole form drives search over HTMX: typing + submit, or changing any
-    filter, re-runs /search and swaps the results in. `hx-trigger` on the form
-    fires on submit (prompt) and on filter `change`. -#}
-<form id="search-form"
+    filter, re-runs /search and swaps the results in. -#}
+<form id="search-form" class="search-panel"
       hx-get="/search"
       hx-target="#search-results"
       hx-swap="innerHTML"
@@ -24,7 +32,7 @@
   <div class="image-stub">
     <span>Or search by image:</span>
     <label>upload a reference<input type="file" accept="image/*" disabled /></label>
-    <span>(coming soon)</span>
+    <span class="soon">coming soon</span>
   </div>
 
   <div class="filters">
@@ -55,4 +63,31 @@
 <div id="search-results">
   {% include "_results.html" %}
 </div>
+
+<section class="journey">
+  <h2 class="section-title">The four-step ritual</h2>
+  <p class="section-sub">What turns "I like this idea" into "I know exactly how this looks on me."</p>
+  <div class="journey-grid">
+    <a class="journey-step" href="/">
+      <span class="jnum">1</span>
+      <h3>Search &amp; discover</h3>
+      <p>Find real designs by describing an idea or filtering by style, body part and size.</p>
+    </a>
+    <a class="journey-step" href="/generate">
+      <span class="jnum">2</span>
+      <h3>Generate with AI</h3>
+      <p>Create original variations in any style, then regenerate until it's right.</p>
+    </a>
+    <a class="journey-step" href="/try-on">
+      <span class="jnum">3</span>
+      <h3>Try it on</h3>
+      <p>Drop the design onto a photo of your own body and preview the placement.</p>
+    </a>
+    <a class="journey-step" href="/guide">
+      <span class="jnum">4</span>
+      <h3>Learn &amp; book</h3>
+      <p>Check what suits you, how it heals, and how to pick a studio that's actually safe.</p>
+    </a>
+  </div>
+</section>
 {% endblock %}
