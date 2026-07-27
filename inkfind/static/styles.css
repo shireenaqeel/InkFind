@@ -12,17 +12,20 @@
   --ink: #1c1a15;
   --ink-soft: #46423a;
   --faint: #857e6b;
-  --red: #b3122a;
-  --red-deep: #86000f;
+  --red: #7a0d1a;
+  --red-deep: #4f0810;
   --line: #1c1a15;
   --good: #2f7d4f;
   --amber: #b07d12;
-  --warn: #b3122a;
+  --warn: #7a0d1a;
   --radius: 3px;
   --frame: 2px solid var(--ink);
   --frame-thick: 3px solid var(--ink);
   --hard: 6px 6px 0 var(--ink);
   --hard-red: 6px 6px 0 var(--red);
+  /* Hand-drawn motifs (inline SVG) — a four-point sparkle and a wobbly ink rule. */
+  --spark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%237a0d1a' d='M12 1 C13 8 16 11 23 12 C16 13 13 16 12 23 C11 16 8 13 1 12 C8 11 11 8 12 1 Z'/%3E%3C/svg%3E");
+  --wave: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='9' viewBox='0 0 120 9'%3E%3Cpath d='M0 5 Q10 1 20 5 T40 5 T60 5 T80 5 T100 5 T120 5' fill='none' stroke='%237a0d1a' stroke-width='2.5'/%3E%3C/svg%3E");
 }
 
 * {
@@ -160,8 +163,33 @@ a {
 
 /* --- Hero ------------------------------------------------------------------ */
 .hero {
+  position: relative;
   padding: 44px 0 22px;
   text-align: center;
+}
+.hero::before,
+.hero::after {
+  content: "";
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  background: var(--spark) center / contain no-repeat;
+}
+.hero::before {
+  top: 40px;
+  left: 4%;
+  transform: rotate(-12deg);
+}
+.hero::after {
+  top: 104px;
+  right: 5%;
+  transform: rotate(12deg);
+}
+@media (max-width: 720px) {
+  .hero::before,
+  .hero::after {
+    display: none;
+  }
 }
 .eyebrow {
   display: inline-block;
@@ -216,10 +244,23 @@ a {
 
 /* --- Section headings ------------------------------------------------------ */
 .section-title {
-  margin: 0 0 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  margin: 0 0 10px;
+  padding-bottom: 13px;
   font-size: 1.7rem;
   text-transform: uppercase;
   letter-spacing: 0.02em;
+  background: var(--wave) left bottom repeat-x;
+  background-size: 116px 9px;
+}
+.section-title::before {
+  content: "";
+  width: 22px;
+  height: 22px;
+  flex: none;
+  background: var(--spark) center / contain no-repeat;
 }
 .section-sub {
   margin: 0 0 8px;
@@ -235,7 +276,9 @@ a {
   margin-top: 10px;
   background: var(--paper-2);
   border: var(--frame-thick);
-  padding: 20px;
+  /* Double-rule frame like an old flash sheet: gap, then a second ink line. */
+  box-shadow: inset 0 0 0 4px var(--paper-2), inset 0 0 0 6px var(--ink);
+  padding: 24px;
 }
 .searchbar {
   display: flex;
@@ -571,9 +614,24 @@ a {
 
 /* --- "The four-step ritual" journey ---------------------------------------- */
 .journey {
+  position: relative;
   margin-top: 54px;
   border-top: var(--frame-thick);
-  padding-top: 28px;
+  padding-top: 36px;
+}
+/* Centered ornament sitting on the divider rule. */
+.journey::before {
+  content: "✦ ✦ ✦";
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--paper);
+  color: var(--red);
+  padding: 0 16px;
+  font-size: 0.85rem;
+  letter-spacing: 0.3em;
+  line-height: 1;
 }
 .journey-grid {
   display: grid;
@@ -638,7 +696,8 @@ a {
   justify-content: center;
   background: var(--paper-2);
   border: var(--frame-thick);
-  padding: 16px;
+  box-shadow: inset 0 0 0 4px var(--paper-2), inset 0 0 0 6px var(--ink);
+  padding: 20px;
 }
 .tryon-canvas {
   display: block;
@@ -736,12 +795,23 @@ a {
   margin-top: 38px;
 }
 .guide-h {
-  margin: 0 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 16px;
+  padding-bottom: 12px;
   font-size: 1.35rem;
   text-transform: uppercase;
   letter-spacing: 0.02em;
-  border-bottom: var(--frame);
-  padding-bottom: 8px;
+  background: var(--wave) left bottom repeat-x;
+  background-size: 116px 9px;
+}
+.guide-h::before {
+  content: "";
+  width: 20px;
+  height: 20px;
+  flex: none;
+  background: var(--spark) center / contain no-repeat;
 }
 .guide-matcher {
   display: flex;
